@@ -2,26 +2,45 @@
 
 namespace Grocy\Controllers;
 
-use \Grocy\Services\DatabaseService;
-use \Grocy\Services\ApplicationService;
-
 class SystemApiController extends BaseApiController
 {
-	public function __construct(\DI\Container $container)
+	public function GetConfig(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
-		parent::__construct($container);
-		$this->DatabaseService = new DatabaseService();
-		$this->ApplicationService = new ApplicationService();
-	}
+		try
+		{
+			$constants = get_defined_constants();
 
-	protected $DatabaseService;
-	protected $ApplicationService;
+			// Some GROCY_* constants are not really config settings and therefore should not be exposed
+			unset($constants['GROCY_AUTHENTICATED'], $constants['GROCY_DATAPATH'], $constants['GROCY_IS_EMBEDDED_INSTALL'], $constants['GROCY_USER_ID']);
+
+			$returnArray = [];
+
+			foreach ($constants as $constant => $value)
+			{
+				if (substr($constant, 0, 6) === 'GROCY_')
+				{
+					$returnArray[substr($constant, 6)] = $value;
+				}
+			}
+
+			return $this->ApiResponse($response, $returnArray);
+		}
+		catch (\Exception $ex)
+		{
+			return $this->GenericErrorResponse($response, $ex->getMessage());
+		}
+	}
 
 	public function GetDbChangedTime(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
-		return $this->ApiResponse($response, array(
-			'changed_time' => $this->DatabaseService->GetDbChangedTime()
-		));
+		return $this->ApiResponse($response, [
+			'changed_time' => $this->getDatabaseService()->GetDbChangedTime()
+		]);
+	}
+
+	public function GetSystemInfo(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
+	{
+		return $this->ApiResponse($response, $this->getApplicationService()->GetSystemInfo());
 	}
 
 	public function LogMissingLocalization(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
@@ -30,20 +49,20 @@ class SystemApiController extends BaseApiController
 		{
 			try
 			{
-				$requestBody = $request->getParsedBody();
+				$requestBody = $this->GetParsedAndFilteredRequestBody($request);
 
-				$this->LocalizationService->CheckAndAddMissingTranslationToPot($requestBody['text']);
+				$this->getLocalizationService()->CheckAndAddMissingTranslationToPot($requestBody['text']);
 				return $this->EmptyApiResponse($response);
 			}
 			catch (\Exception $ex)
 			{
 				return $this->GenericErrorResponse($response, $ex->getMessage());
 			}
-		}	
+		}
 	}
 
-	public function GetSystemInfo(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
+	public function __construct(\DI\Container $container)
 	{
-		return $this->ApiResponse($response, $this->ApplicationService->GetSystemInfo());
+		parent::__construct($container);
 	}
 }

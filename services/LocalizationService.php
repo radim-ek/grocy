@@ -2,89 +2,35 @@
 
 namespace Grocy\Services;
 
-use \Grocy\Services\DatabaseService;
-use \Gettext\Translation;
-use \Gettext\Translations;
-use \Gettext\Translator;
+use Gettext\Translation;
+use Gettext\Translations;
+use Gettext\Translator;
 
 class LocalizationService
 {
-	public function __construct(string $culture)
-	{
-		$this->Culture = $culture;
-		$this->DatabaseService = new DatabaseService();
-		$this->Database = $this->DatabaseService->GetDbConnection();
-
-		$this->LoadLocalizations($culture);
-	}
-
-	protected $DatabaseService;
-	protected $Database;
-	protected $Pot;
-	protected $PotMain;
 	protected $Po;
+
 	protected $PoUserStrings;
+
+	protected $Pot;
+
+	protected $PotMain;
+
 	protected $Translator;
 
-	private function LoadLocalizations()
-	{
-		$culture = $this->Culture;
+	private static $instanceMap = [];
 
+	public function CheckAndAddMissingTranslationToPot($text)
+	{
 		if (GROCY_MODE === 'dev')
 		{
-			$this->PotMain = Translations::fromPoFile(__DIR__ . '/../localization/strings.pot');
-
-			$this->Pot = Translations::fromPoFile(__DIR__ . '/../localization/chore_period_types.pot');
-			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/chore_assignment_types.pot'));
-			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/component_translations.pot'));
-			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/demo_data.pot'));
-			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/stock_transaction_types.pot'));
-			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/strings.pot'));
-			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/userfield_types.pot'));
-		}
-
-		$this->PoUserStrings = new Translations();
-		$this->PoUserStrings->setDomain('grocy/userstrings');
-
-		$this->Po = Translations::fromPoFile(__DIR__ . "/../localization/$culture/chore_period_types.po");
-		$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/chore_assignment_types.po"));
-		$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/component_translations.po"));
-		$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/demo_data.po"));
-		$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/stock_transaction_types.po"));
-		$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/strings.po"));
-		$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/userfield_types.po"));
-
-		$quantityUnits = null;
-		try
-		{
-			$quantityUnits = $this->Database->quantity_units()->fetchAll();
-		}
-		catch (\Exception $ex)
-		{
-			// Happens when database is not initialised or migrated...
-		}
-
-		if ($quantityUnits !== null)
-		{
-			foreach ($quantityUnits as $quantityUnit)
+			if ($this->Pot->find('', $text) === false && $this->PoUserStrings->find('', $text) === false && empty($text) === false)
 			{
-				$translation = new Translation('', $quantityUnit['name']);
-				$translation->setTranslation($quantityUnit['name']);
-				$translation->setPlural($quantityUnit['name_plural']);
-				$translation->setPluralTranslations(preg_split('/\r\n|\r|\n/', $quantityUnit['plural_forms']));
-
-				$this->PoUserStrings[] = $translation;
+				$translation = new Translation('', $text);
+				$this->PotMain[] = $translation;
+				$this->PotMain->toPoFile(__DIR__ . '/../localization/strings.pot');
 			}
-			$this->Po = $this->Po->mergeWith($this->PoUserStrings);
 		}
-
-		$this->Translator = new Translator();
-		$this->Translator->loadTranslations($this->Po);
-	}
-
-	public function GetPoAsJsonString()
-	{
-		return $this->Po->toJsonString();
 	}
 
 	public function GetPluralCount()
@@ -111,6 +57,25 @@ class LocalizationService
 		}
 	}
 
+	public function GetPoAsJsonString()
+	{
+		return $this->Po->toJsonString();
+	}
+
+	public function __construct(string $culture)
+	{
+		$this->Culture = $culture;
+
+		$this->LoadLocalizations($culture);
+	}
+
+	public function __n($number, $singularForm, $pluralForm)
+	{
+		$this->CheckAndAddMissingTranslationToPot($singularForm);
+
+		return sprintf($this->Translator->ngettext($singularForm, $pluralForm, $number), $number);
+	}
+
 	public function __t($text, ...$placeholderValues)
 	{
 		$this->CheckAndAddMissingTranslationToPot($text);
@@ -125,23 +90,120 @@ class LocalizationService
 		}
 	}
 
-	public function __n($number, $singularForm, $pluralForm)
+	public static function getInstance(string $culture)
 	{
-		$this->CheckAndAddMissingTranslationToPot($singularForm);
+		if (!in_array($culture, self::$instanceMap))
+		{
+			self::$instanceMap[$culture] = new self($culture);
+		}
 
-		return sprintf($this->Translator->ngettext($singularForm, $pluralForm, $number), $number);
+		return self::$instanceMap[$culture];
 	}
 
-	public function CheckAndAddMissingTranslationToPot($text)
+	protected function getDatabaseService()
 	{
+		return DatabaseService::getInstance();
+	}
+
+	protected function getdatabase()
+	{
+		return $this->getDatabaseService()->GetDbConnection();
+	}
+
+	private function LoadLocalizations()
+	{
+		$culture = $this->Culture;
+
 		if (GROCY_MODE === 'dev')
 		{
-			if ($this->Pot->find('', $text) === false && $this->PoUserStrings->find('', $text) === false)
+			$this->PotMain = Translations::fromPoFile(__DIR__ . '/../localization/strings.pot');
+
+			$this->Pot = Translations::fromPoFile(__DIR__ . '/../localization/chore_period_types.pot');
+			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/chore_assignment_types.pot'));
+			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/component_translations.pot'));
+			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/stock_transaction_types.pot'));
+			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/strings.pot'));
+			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/userfield_types.pot'));
+			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/permissions.pot'));
+			$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/locales.pot'));
+
+			if (GROCY_MODE !== 'production')
 			{
-				$translation = new Translation('', $text);
-				$this->PotMain[] = $translation;
-				$this->PotMain->toPoFile(__DIR__ . '/../localization/strings.pot');
+				$this->Pot = $this->Pot->mergeWith(Translations::fromPoFile(__DIR__ . '/../localization/demo_data.pot'));
 			}
 		}
+
+		$this->PoUserStrings = new Translations();
+		$this->PoUserStrings->setDomain('grocy/userstrings');
+
+		$this->Po = Translations::fromPoFile(__DIR__ . "/../localization/$culture/strings.po");
+
+		if (file_exists(__DIR__ . "/../localization/$culture/chore_assignment_types.po"))
+		{
+			$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/chore_assignment_types.po"));
+		}
+
+		if (file_exists(__DIR__ . "/../localization/$culture/component_translations.po"))
+		{
+			$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/component_translations.po"));
+		}
+
+		if (file_exists(__DIR__ . "/../localization/$culture/stock_transaction_types.po"))
+		{
+			$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/stock_transaction_types.po"));
+		}
+
+		if (file_exists(__DIR__ . "/../localization/$culture/chore_period_types.po"))
+		{
+			$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/chore_period_types.po"));
+		}
+
+		if (file_exists(__DIR__ . "/../localization/$culture/userfield_types.po"))
+		{
+			$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/userfield_types.po"));
+		}
+
+		if (file_exists(__DIR__ . "/../localization/$culture/permissions.po"))
+		{
+			$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/permissions.po"));
+		}
+
+		if (file_exists(__DIR__ . "/../localization/$culture/locales.po"))
+		{
+			$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/locales.po"));
+		}
+
+		if (GROCY_MODE !== 'production' && file_exists(__DIR__ . "/../localization/$culture/demo_data.po"))
+		{
+			$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/demo_data.po"));
+		}
+
+		$quantityUnits = null;
+		try
+		{
+			$quantityUnits = $this->getDatabase()->quantity_units()->fetchAll();
+		}
+		catch (\Exception $ex)
+		{
+			// Happens when database is not initialised or migrated...
+		}
+
+		if ($quantityUnits !== null)
+		{
+			foreach ($quantityUnits as $quantityUnit)
+			{
+				$translation = new Translation('', $quantityUnit['name']);
+				$translation->setTranslation($quantityUnit['name']);
+				$translation->setPlural($quantityUnit['name_plural']);
+				$translation->setPluralTranslations(preg_split('/\r\n|\r|\n/', $quantityUnit['plural_forms']));
+
+				$this->PoUserStrings[] = $translation;
+			}
+
+			$this->Po = $this->Po->mergeWith($this->PoUserStrings);
+		}
+
+		$this->Translator = new Translator();
+		$this->Translator->loadTranslations($this->Po);
 	}
 }

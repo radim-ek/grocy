@@ -1,6 +1,6 @@
 <?php
 
-use \Grocy\Helpers\BaseBarcodeLookupPlugin;
+use Grocy\Helpers\BaseBarcodeLookupPlugin;
 
 /*
 	This class must extend BaseBarcodeLookupPlugin (in namespace \Grocy\Helpers)
@@ -14,7 +14,7 @@ class DemoBarcodeLookupPlugin extends BaseBarcodeLookupPlugin
 
 	/*
 		To try it:
-		Call the API function at /api/stock/external-barcode-lookup/{barcode}
+		Call the API function at /api/stock/barcodes/external-lookup/{barcode}
 
 		When you also add ?add=true as a query parameter to the API call,
 		on a successful lookup the product is added to the database and in the output
@@ -55,24 +55,24 @@ class DemoBarcodeLookupPlugin extends BaseBarcodeLookupPlugin
 	*/
 	protected function ExecuteLookup($barcode)
 	{
-		if ($barcode === 'x') // Demonstration when nothing is found
-		{
+		if ($barcode === 'x')
+		{ // Demonstration when nothing is found
 			return null;
 		}
-		elseif ($barcode === 'e') // Demonstration when an error occurred
-		{
+		elseif ($barcode === 'e')
+		{ // Demonstration when an error occurred
 			throw new \Exception('This is the error message from the plugin...');
 		}
 		else
 		{
-			return array(
+			return [
 				'name' => 'LookedUpProduct_' . RandomString(5),
 				'location_id' => $this->Locations[0]->id,
 				'qu_id_purchase' => $this->QuantityUnits[0]->id,
 				'qu_id_stock' => $this->QuantityUnits[0]->id,
 				'qu_factor_purchase_to_stock' => 1,
 				'barcode' => $barcode
-			);
+			];
 		}
 	}
 }

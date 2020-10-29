@@ -2,36 +2,13 @@
 
 namespace Grocy\Services;
 
-use \Gumlet\ImageResize;
+use Gumlet\ImageResize;
 
 class FilesService extends BaseService
 {
 	const FILE_SERVE_TYPE_PICTURE = 'picture';
 
-	public function __construct()
-	{
-		parent::__construct();
-		
-		$this->StoragePath = GROCY_DATAPATH . '/storage';
-		
-		if (!file_exists($this->StoragePath))
-		{
-			mkdir($this->StoragePath);
-		}
-	}
-
 	private $StoragePath;
-
-	public function GetFilePath($group, $fileName)
-	{
-		$groupFolderPath = $this->StoragePath . '/' . $group;
-		if (!file_exists($groupFolderPath))
-		{
-			mkdir($groupFolderPath);
-		}
-
-		return  $groupFolderPath . '/' . $fileName;
-	}
 
 	public function DownscaleImage($group, $fileName, $bestFitHeight = null, $bestFitWidth = null)
 	{
@@ -52,18 +29,20 @@ class FilesService extends BaseService
 			if (!file_exists($filePathDownscaled))
 			{
 				$image = new ImageResize($filePath);
+
 				if ($bestFitHeight !== null && $bestFitHeight !== null)
 				{
 					$image->resizeToBestFit($bestFitWidth, $bestFitHeight);
 				}
-				else if ($bestFitHeight !== null)
+				elseif ($bestFitHeight !== null)
 				{
 					$image->resizeToHeight($bestFitHeight);
 				}
-				else if ($bestFitWidth !== null)
+				elseif ($bestFitWidth !== null)
 				{
 					$image->resizeToWidth($bestFitWidth);
 				}
+
 				$image->save($filePathDownscaled);
 			}
 		}
@@ -73,5 +52,29 @@ class FilesService extends BaseService
 		}
 
 		return $filePathDownscaled;
+	}
+
+	public function GetFilePath($group, $fileName)
+	{
+		$groupFolderPath = $this->StoragePath . '/' . $group;
+
+		if (!file_exists($groupFolderPath))
+		{
+			mkdir($groupFolderPath);
+		}
+
+		return $groupFolderPath . '/' . $fileName;
+	}
+
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->StoragePath = GROCY_DATAPATH . '/storage';
+
+		if (!file_exists($this->StoragePath))
+		{
+			mkdir($this->StoragePath);
+		}
 	}
 }

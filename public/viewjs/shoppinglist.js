@@ -1,4 +1,6 @@
-﻿var shoppingListTable = $('#shoppinglist-table').DataTable({
+﻿var collapsedGroups = {};
+
+var shoppingListTable = $('#shoppinglist-table').DataTable({
 	'order': [[1, 'asc']],
 	"orderFixed": [[3, 'asc']],
 	'columnDefs': [
@@ -7,11 +9,33 @@
 		{ 'visible': false, 'targets': 3 }
 	],
 	'rowGroup': {
-		dataSrc: 3
+		dataSrc: 3,
+		startRender: function(rows, group)
+		{
+			var collapsed = !!collapsedGroups[group];
+			var toggleClass = collapsed ? "fa-caret-right" : "fa-caret-down";
+
+			rows.nodes().each(function(row)
+			{
+				row.style.display = collapsed ? "none" : "";
+			});
+
+			return $("<tr/>")
+				.append('<td colspan="' + rows.columns()[0].length + '">' + group + ' <span class="fa fa-fw ' + toggleClass + '"/></td>')
+				.attr("data-name", group)
+				.toggleClass("collapsed", collapsed);
+		}
 	}
 });
 $('#shoppinglist-table tbody').removeClass("d-none");
 shoppingListTable.columns.adjust().draw();
+
+$(document).on("click", "tr.dtrg-group", function()
+{
+	var name = $(this).data('name');
+	collapsedGroups[name] = !collapsedGroups[name];
+	shoppingListTable.draw();
+});
 
 $("#search").on("keyup", Delay(function()
 {
@@ -44,7 +68,7 @@ $("#selected-shopping-list").on("change", function()
 	window.location.href = U('/shoppinglist?list=' + value);
 });
 
-$(".status-filter-button").on("click", function()
+$(".status-filter-message").on("click", function()
 {
 	var value = $(this).data("status-filter");
 	$("#status-filter").val(value);
@@ -69,16 +93,16 @@ $("#delete-selected-shopping-list").on("click", function()
 				className: 'btn-danger'
 			}
 		},
-		callback: function (result)
+		callback: function(result)
 		{
 			if (result === true)
 			{
 				Grocy.Api.Delete('objects/shopping_lists/' + objectId, {},
-					function (result)
+					function(result)
 					{
 						window.location.href = U('/shoppinglist');
 					},
-					function (xhr)
+					function(xhr)
 					{
 						console.error(xhr);
 					}
@@ -92,10 +116,14 @@ $(document).on('click', '.shoppinglist-delete-button', function(e)
 {
 	e.preventDefault();
 
+	// Remove the focus from the current button
+	// to prevent that the tooltip stays until clicked anywhere else
+	document.activeElement.blur();
+
 	var shoppingListItemId = $(e.currentTarget).attr('data-shoppinglist-id');
 	Grocy.FrontendHelpers.BeginUiBusy();
 
-	Grocy.Api.Delete('objects/shopping_list/' + shoppingListItemId, { },
+	Grocy.Api.Delete('objects/shopping_list/' + shoppingListItemId, {},
 		function(result)
 		{
 			animateCSS("#shoppinglistitem-" + shoppingListItemId + "-row", "fadeOut", function()
@@ -113,9 +141,32 @@ $(document).on('click', '.shoppinglist-delete-button', function(e)
 	);
 });
 
+$(document).on("click", ".product-name-cell", function(e)
+{
+	if ($(e.currentTarget).attr("data-product-id") != "")
+	{
+		Grocy.Components.ProductCard.Refresh($(e.currentTarget).attr("data-product-id"));
+		$("#shoppinglist-productcard-modal").modal("show");
+	}
+});
+
 $(document).on('click', '#add-products-below-min-stock-amount', function(e)
 {
 	Grocy.Api.Post('stock/shoppinglist/add-missing-products', { "list_id": $("#selected-shopping-list").val() },
+		function(result)
+		{
+			window.location.href = U('/shoppinglist?list=' + $("#selected-shopping-list").val());
+		},
+		function(xhr)
+		{
+			console.error(xhr);
+		}
+	);
+});
+
+$(document).on('click', '#add-expired-products', function(e)
+{
+	Grocy.Api.Post('stock/shoppinglist/add-expired-products', { "list_id": $("#selected-shopping-list").val() },
 		function(result)
 		{
 			window.location.href = U('/shoppinglist?list=' + $("#selected-shopping-list").val());
@@ -172,6 +223,10 @@ $(document).on('click', '#clear-shopping-list', function(e)
 $(document).on('click', '.shopping-list-stock-add-workflow-list-item-button', function(e)
 {
 	e.preventDefault();
+
+	// Remove the focus from the current button
+	// to prevent that the tooltip stays until clicked anywhere else
+	document.activeElement.blur();
 
 	var href = $(e.currentTarget).attr('href');
 
@@ -248,10 +303,14 @@ $(document).on('click', '.order-listitem-button', function(e)
 {
 	e.preventDefault();
 
+	// Remove the focus from the current button
+	// to prevent that the tooltip stays until clicked anywhere else
+	document.activeElement.blur();
+
 	Grocy.FrontendHelpers.BeginUiBusy();
 
 	var listItemId = $(e.currentTarget).attr('data-item-id');
-	
+
 	var done = 1;
 	if ($(e.currentTarget).attr('data-item-done') == 1)
 	{
@@ -283,7 +342,7 @@ $(document).on('click', '.order-listitem-button', function(e)
 		}
 	);
 
-	
+
 	var statusInfoCell = $("#shoppinglistitem-" + listItemId + "-status-info");
 	if (done == 1)
 	{
@@ -367,7 +426,7 @@ $(".switch-view-mode-button").on('click', function(e)
 
 	if ($("body").hasClass("fullscreen-card"))
 	{
-		window.location.hash = "#compact";	
+		window.location.hash = "#compact";
 	}
 	else
 	{
@@ -388,3 +447,13 @@ if ($(window).width() < 768 & window.location.hash !== "#compact" && !BoolVal(Gr
 {
 	$("#shopping-list-compact-view-button").click();
 }
+
+$(window).on("message", function(e)
+{
+	var data = e.originalEvent.data;
+
+	if (data.Message === "ShoppingListChanged")
+	{
+		window.location.href = U('/shoppinglist?list=' + data.Payload);
+	}
+});

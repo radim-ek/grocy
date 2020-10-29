@@ -2,14 +2,16 @@
 ERP beyond your fridge
 
 ## Give it a try
-- Public demo of the latest stable version &rarr; [https://demo.grocy.info](https://demo.grocy.info)
-- Public demo of the latest pre-release version (current master branch) &rarr; [https://demo-prerelease.grocy.info](https://demo-prerelease.grocy.info)
+- Public demo of the latest stable version (`release` branch) &rarr; [https://demo.grocy.info](https://demo.grocy.info)
+- Public demo of the latest pre-release version (`master` branch) &rarr; [https://demo-prerelease.grocy.info](https://demo-prerelease.grocy.info)
 
-## Getting in touch
-There is the [r/grocy subreddit](https://www.reddit.com/r/grocy) to connect with other grocy users. If you've found something that does not work or if you have an idea for an improvement or new things which you would find useful, feel free to open an issue in the [issue tracker](https://github.com/grocy/grocy/issues) here.
+## Questions / Help / Bug reporting / Feature requests
+There is the [r/grocy subreddit](https://www.reddit.com/r/grocy) to connect with other grocy users and getting help.
+
+If you've found something that does not work or if you have an idea for an improvement or new things which you would find useful, feel free to open an issue in the [issue tracker](https://github.com/grocy/grocy/issues) here.
 
 ## Community contributions
-See the website for a list of community contributed Add-ons / Tools: [https://grocy.info/#addons](https://grocy.info/#addons)
+See the website for a list of community contributed Add-ons / Tools: [https://grocy.info/addons](https://grocy.info/addons)
 
 ## Motivation
 A household needs to be managed. I did this so far (almost 10 years) with my first self written software (a C# windows forms application) and with a bunch of Excel sheets. The software is a pain to use and Excel is Excel. So I searched for and tried different things for a (very) long time, nothing 100 % fitted, so this is my aim for a "complete household management"-thing. ERP your fridge!
@@ -19,9 +21,9 @@ A household needs to be managed. I did this so far (almost 10 years) with my fir
 >
 > See https://github.com/grocy/grocy-desktop or directly download the [latest release](https://releases.grocy.info/latest-desktop) - the installation is nothing more than just clicking 2 times "next"...
 
-Just unpack the [latest release](https://releases.grocy.info/latest) on your PHP (SQLite (3.8.3 or higher) extension required, currently only tested with PHP 7.3) enabled webserver (webservers root should point to the `public` directory), copy `config-dist.php` to `data/config.php`, edit it to your needs, ensure that the `data` directory is writable and you're ready to go, (to make it writable, maybe use `chown -R www-data:www-data data/`). Default login is user `admin` with password `admin`, please change the password immediately (see user menu).
+Just unpack the [latest release](https://releases.grocy.info/latest) on your PHP (SQLite (3.8.3 or higher) extension required, currently only tested with PHP 7.4) enabled webserver (webservers root should point to the `public` directory), copy `config-dist.php` to `data/config.php`, edit it to your needs, ensure that the `data` directory is writable and you're ready to go, (to make it writable, maybe use `chown -R www-data:www-data data/`). Default login is user `admin` with password `admin`, please change the password immediately (see user menu).
 
-Alternatively clone this repository and install Composer and Yarn dependencies manually.
+Alternatively clone this repository (the `release` branch always references the latest released version, or checkout the latest tagged revision) and install Composer and Yarn dependencies manually.
 
 If you use nginx as your webserver, please include `try_files $uri /index.php$is_args$query_string;` in your location block.
 
@@ -41,7 +43,7 @@ If you run grocy on Linux, there is also `update.sh` (remember to make the scrip
 ## Localization
 grocy is fully localizable - the default language is English (integrated into code), a German localization is always maintained by me.
 You can easily help translating grocy at https://www.transifex.com/grocy/grocy, if your language is incomplete or not available yet.
-(Language can be changed in `data/config.php`, e. g. `Setting('CULTURE', 'it');`)
+(The default language can be set in `data/config.php`, e. g. `Setting('DEFAULT_LOCALE', 'it');` and there is also a user setting (see the user settings page) to set a different language per user)
 
 The [pre-release demo](https://demo-prerelease.grocy.info) is available for any translation which is at least 80 % complete and will pull the translations from Transifex 10 minutes past every hour, so you can have a kind of instant preview of your contributed translations. Thank you!
 
@@ -56,6 +58,8 @@ See the integrated Swagger UI instance on [/api](https://demo.grocy.info/api).
 Some fields (with a barcode icon above) also allow to select a value by scanning a barcode. It works best when your barcode reader prefixes every barcode with a letter which is normally not part of a item name (I use a `$`) and sends a `TAB` after a scan.
 
 Additionally it's also possible to use your device camera to scan a barcode by using the camera button on the right side of the corresponding field (powered by [QuaggaJS](https://github.com/serratus/quaggaJS), totally offline / client-side camera stream processing, please note due to browser security restrictions, this only works when serving grocy via a secure connection (`https://`)). Quick video demo: https://www.youtube.com/watch?v=Y5YH6IJFnfc
+
+My personal recommendation: Use a USB barcode laser scanner. They are cheap and work 1000 % better, faster, under any lighting condition and from any angle.
 
 ### Input shorthands for date fields
 For (productivity) reasons all date (and time) input (and display) fields use the ISO-8601 format regardless of localization.
@@ -103,6 +107,9 @@ In embedded mode, settings can be overridden by text files in `data/settingoverr
 Any help is more than appreciated. Feel free to pick any open unassigned issue and submit a pull request, but please leave a short comment or assign the issue yourself, to avoid working on the same thing.
 
 See https://grocy.info/#say-thanks for more ideas if you just want to say thanks.
+
+## Roadmap
+There is none. grocy is only my hobby, one I like, but not the only one, and because of that, there are no release dates, no schedules for when anything is ready, it's done when it's done, maybe tomorrow, maybe tomorrow next year, everyone is invited to contribute - I appreciate all ideas and contributions. The progress of a specific bug/enhancement is always tracked in the corresponding issue, at least by commit comment references.
 
 ## Screenshots
 #### Dashboard

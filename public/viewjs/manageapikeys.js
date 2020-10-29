@@ -25,7 +25,7 @@ $("#search").on("keyup", Delay(function()
 	apiKeysTable.search(value).draw();
 }, 200));
 
-$(document).on('click', '.apikey-delete-button', function (e)
+$(document).on('click', '.apikey-delete-button', function(e)
 {
 	var objectName = $(e.currentTarget).attr('data-apikey-apikey');
 	var objectId = $(e.currentTarget).attr('data-apikey-id');
@@ -61,3 +61,12 @@ $(document).on('click', '.apikey-delete-button', function (e)
 		}
 	});
 });
+$('.apikey-show-qr-button').on('click', function()
+{
+	var qrcodeHtml = getQRCodeForAPIKey($(this).data('apikey-type'), $(this).data('apikey-key'));
+	bootbox.alert({
+		title: __t('API key'),
+		message: "<p class='text-center'>" + qrcodeHtml + "</p>",
+		closeButton: false
+	});
+})

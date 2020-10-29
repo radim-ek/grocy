@@ -2,9 +2,10 @@
 
 function FindObjectInArrayByPropertyValue($array, $propertyName, $propertyValue)
 {
-	foreach($array as $object)
+	foreach ($array as $object)
 	{
-		if($object->{$propertyName} == $propertyValue)
+		if ($object->{$propertyName}
+			== $propertyValue)
 		{
 			return $object;
 		}
@@ -15,29 +16,38 @@ function FindObjectInArrayByPropertyValue($array, $propertyName, $propertyValue)
 
 function FindAllObjectsInArrayByPropertyValue($array, $propertyName, $propertyValue, $operator = '==')
 {
-	$returnArray = array();
+	$returnArray = [];
 
-	foreach($array as $object)
+	foreach ($array as $object)
 	{
-		switch($operator)
+		switch ($operator)
 		{
 			case '==':
-				if($object->{$propertyName} == $propertyValue)
+
+				if ($object->{$propertyName}
+					== $propertyValue)
 				{
 					$returnArray[] = $object;
 				}
+
 				break;
 			case '>':
-				if($object->{$propertyName} > $propertyValue)
+
+				if ($object->{$propertyName}
+					> $propertyValue)
 				{
 					$returnArray[] = $object;
 				}
+
 				break;
 			case '<':
-				if($object->{$propertyName} < $propertyValue)
+
+				if ($object->{$propertyName}
+					< $propertyValue)
 				{
 					$returnArray[] = $object;
 				}
+
 				break;
 		}
 	}
@@ -47,29 +57,35 @@ function FindAllObjectsInArrayByPropertyValue($array, $propertyName, $propertyVa
 
 function FindAllItemsInArrayByValue($array, $value, $operator = '==')
 {
-	$returnArray = array();
+	$returnArray = [];
 
-	foreach($array as $item)
+	foreach ($array as $item)
 	{
-		switch($operator)
+		switch ($operator)
 		{
 			case '==':
-				if($item == $value)
+
+				if ($item == $value)
 				{
 					$returnArray[] = $item;
 				}
+
 				break;
 			case '>':
-				if($item > $value)
+
+				if ($item > $value)
 				{
 					$returnArray[] = $item;
 				}
+
 				break;
 			case '<':
-				if($item < $value)
+
+				if ($item < $value)
 				{
 					$returnArray[] = $item;
 				}
+
 				break;
 		}
 	}
@@ -80,7 +96,8 @@ function FindAllItemsInArrayByValue($array, $value, $operator = '==')
 function SumArrayValue($array, $propertyName)
 {
 	$sum = 0;
-	foreach($array as $object)
+
+	foreach ($array as $object)
 	{
 		$sum += floatval($object->{$propertyName});
 	}
@@ -107,6 +124,7 @@ function GetClassConstants($className, $prefix = null)
 function RandomString($length, $allowedChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
 {
 	$randomString = '';
+
 	for ($i = 0; $i < $length; $i++)
 	{
 		$randomString .= $allowedChars[rand(0, strlen($allowedChars) - 1)];
@@ -138,30 +156,37 @@ function BoolToString(bool $bool)
 	return $bool ? 'true' : 'false';
 }
 
+function ExternalSettingValue(string $value)
+{
+	$tvalue = rtrim($value, "\r\n");
+	$lvalue = strtolower($tvalue);
+
+	if ($lvalue === 'true')
+	{
+		return true;
+	}
+	elseif ($lvalue === 'false')
+	{
+		return false;
+	}
+
+	return $tvalue;
+}
+
 function Setting(string $name, $value)
 {
 	if (!defined('GROCY_' . $name))
 	{
 		// The content of a $name.txt file in /data/settingoverrides can overwrite the given setting (for embedded mode)
 		$settingOverrideFile = GROCY_DATAPATH . '/settingoverrides/' . $name . '.txt';
+
 		if (file_exists($settingOverrideFile))
 		{
-			define('GROCY_' . $name, file_get_contents($settingOverrideFile));
+			define('GROCY_' . $name, ExternalSettingValue(file_get_contents($settingOverrideFile)));
 		}
-		elseif (getenv('GROCY_' . $name) !== false) // An environment variable with the same name and prefix GROCY_ overwrites the given setting
-		{
-			if (strtolower(getenv('GROCY_' . $name)) === "true")
-			{
-				define('GROCY_' . $name, true);
-			}
-			elseif (strtolower(getenv('GROCY_' . $name)) === "false")
-			{
-				define('GROCY_' . $name, false);
-			}
-			else
-			{
-				define('GROCY_' . $name, getenv('GROCY_' . $name));
-			}
+		elseif (getenv('GROCY_' . $name) !== false)
+		{ // An environment variable with the same name and prefix GROCY_ overwrites the given setting
+			define('GROCY_' . $name, ExternalSettingValue(getenv('GROCY_' . $name)));
 		}
 		else
 		{
@@ -171,10 +196,11 @@ function Setting(string $name, $value)
 }
 
 global $GROCY_DEFAULT_USER_SETTINGS;
-$GROCY_DEFAULT_USER_SETTINGS = array();
+$GROCY_DEFAULT_USER_SETTINGS = [];
 function DefaultUserSetting(string $name, $value)
 {
 	global $GROCY_DEFAULT_USER_SETTINGS;
+
 	if (!array_key_exists($name, $GROCY_DEFAULT_USER_SETTINGS))
 	{
 		$GROCY_DEFAULT_USER_SETTINGS[$name] = $value;
@@ -207,7 +233,7 @@ function GetUserDisplayName($user)
 
 function IsValidFileName($fileName)
 {
-	if(preg_match('=^[^/?*;:{}\\\\]+\.[^/?*;:{}\\\\]+$=', $fileName))
+	if (preg_match('=^[^/?*;:{}\\\\]+\.[^/?*;:{}\\\\]+$=', $fileName))
 	{
 		return true;
 	}
@@ -229,6 +255,7 @@ function string_starts_with($haystack, $needle)
 function string_ends_with($haystack, $needle)
 {
 	$length = strlen($needle);
+
 	if ($length == 0)
 	{
 		return true;

@@ -2,46 +2,40 @@
 
 namespace Grocy\Controllers;
 
-use \Grocy\Services\CalendarService;
-use \Grocy\Services\ApiKeyService;
-
 class CalendarApiController extends BaseApiController
 {
-	public function __construct(\DI\Container $container)
-	{
-		parent::__construct($container);
-		$this->CalendarService = new CalendarService();
-		$this->ApiKeyService = new ApiKeyService();
-	}
-
-	protected $CalendarService;
-	protected $ApiKeyService;
-
 	public function Ical(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
 		try
 		{
 			$vCalendar = new \Eluceo\iCal\Component\Calendar('grocy');
 
-			$events = $this->CalendarService->GetEvents();
-			foreach($events as $event)
+			$events = $this->getCalendarService()->GetEvents();
+
+			foreach ($events as $event)
 			{
 				$date = new \DateTime($event['start']);
-				$date->setTimezone(date_default_timezone_get());
-				
+				$date->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+
 				if ($event['date_format'] === 'date')
 				{
 					$date->setTime(23, 59, 59);
+				}
+
+				$description = '';
+				if (isset($event['description']))
+				{
+					$description = $event['description'];
 				}
 
 				$vEvent = new \Eluceo\iCal\Component\Event();
 				$vEvent->setDtStart($date)
 					->setDtEnd($date)
 					->setSummary($event['title'])
-					->setDescription($event['description'])
-					->setNoTime($event['date_format'] === 'date')
+					->setDescription($description)
+					->setNoTime($event['date_format'] === 'date' || (isset($event['allDay']) && $event['allDay']))
 					->setUseTimezone(true);
-				
+
 				$vCalendar->addComponent($vEvent);
 			}
 
@@ -59,13 +53,18 @@ class CalendarApiController extends BaseApiController
 	{
 		try
 		{
-			return $this->ApiResponse($response, array(
-				'url' => $this->AppContainer->get('UrlManager')->ConstructUrl('/api/calendar/ical?secret=' . $this->ApiKeyService->GetOrCreateApiKey(ApiKeyService::API_KEY_TYPE_SPECIAL_PURPOSE_CALENDAR_ICAL))
-			));
+			return $this->ApiResponse($response, [
+				'url' => $this->AppContainer->get('UrlManager')->ConstructUrl('/api/calendar/ical?secret=' . $this->getApiKeyService()->GetOrCreateApiKey(\Grocy\Services\ApiKeyService::API_KEY_TYPE_SPECIAL_PURPOSE_CALENDAR_ICAL))
+			]);
 		}
 		catch (\Exception $ex)
 		{
 			return $this->GenericErrorResponse($response, $ex->getMessage());
 		}
+	}
+
+	public function __construct(\DI\Container $container)
+	{
+		parent::__construct($container);
 	}
 }

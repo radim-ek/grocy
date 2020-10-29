@@ -1,8 +1,9 @@
+# 
 # Translators:
 # Sergio Zampello <seriotv88@gmail.com>, 2019
 # Bernd Bestel <bernd@berrnd.de>, 2019
 # Matteo Piotto <matteo.piotto@welaika.com>, 2019
-# Matteo Parolin <matteoparolin99@gmail.com>, 2019
+# 42d76af3cd20bc399c7e8a413695959f, 2019
 # Antonino Ursino <ninus_@libero.it>, 2020
 # 
 msgid ""
@@ -87,6 +88,9 @@ msgstr "Dati batterie"
 
 msgid "Locations"
 msgstr "Posizioni"
+
+msgid "Stores"
+msgstr "Negozi"
 
 msgid "Quantity units"
 msgstr "Unità di misura"
@@ -226,6 +230,9 @@ msgstr "Fattore di conversione tra unità di acquisto e di dispensa"
 msgid "Create location"
 msgstr "Aggiungi posizione"
 
+msgid "Create store"
+msgstr "Crea negozio"
+
 msgid "Create quantity unit"
 msgstr "Aggiungi unità di misura"
 
@@ -258,6 +265,9 @@ msgstr "Modifica prodotto"
 
 msgid "Edit location"
 msgstr "Modifica posizione"
+
+msgid "Edit store"
+msgstr "Modifica negozio"
 
 msgid "Record data"
 msgstr "Registra dati"
@@ -335,6 +345,9 @@ msgstr "Sei sicuro di voler eliminare il prodotto \"%s\"?"
 
 msgid "Are you sure to delete location \"%s\"?"
 msgstr "Sei sicuro di voler eliminare la posizione \"%s\"?"
+
+msgid "Are you sure to delete store \"%s\"?"
+msgstr "Sei sicuro di voler eliminare il negozio \"%s\"?"
 
 msgid "Manage API keys"
 msgstr "Gestisci le chiavi API"
@@ -462,9 +475,6 @@ msgstr "Ricette"
 
 msgid "Edit recipe"
 msgstr "Modifica Ricetta"
-
-msgid "New recipe"
-msgstr "Nuova Ricetta"
 
 msgid "Ingredients list"
 msgstr "Lista Ingredienti"
@@ -769,8 +779,8 @@ msgstr "Resta connesso in modo permanente"
 msgid "When not set, you will get logged out at latest after 30 days"
 msgstr "Se non impostato, si verrà disconnessi alla fine dopo 30 giorni"
 
-msgid "Filter by status"
-msgstr "Filtra per stato"
+msgid "Status"
+msgstr "Stato"
 
 msgid "Below min. stock amount"
 msgstr "Sotto min. quantità in dispensa"
@@ -1118,6 +1128,9 @@ msgstr ""
 msgid "You have to select a location"
 msgstr "Devi selezionare una posizione"
 
+msgid "You have to select a store"
+msgstr "Devi selezionare un negozio"
+
 msgid "List"
 msgstr "Elenco"
 
@@ -1151,7 +1164,7 @@ msgstr "Informazioni di sistema"
 msgid "Changelog"
 msgstr "Registro delle modifiche"
 
-msgid "will be multiplied a factor of %1$s to get %2$s"
+msgid "will be multiplied by a factor of %1$s to get %2$s"
 msgstr "verrà moltiplicato per un fattore di %1$s per ottenere %2$s"
 
 msgid "The given date is earlier than today, are you sure?"
@@ -1343,7 +1356,7 @@ msgstr "Consumare %1$s di %2$s"
 msgid "Meal plan"
 msgstr "Piano dei pasti"
 
-msgid "Add recipe to %s"
+msgid "Add recipe on %s"
 msgstr "Aggiungi ricetta a %s"
 
 msgid "%s serving"
@@ -1572,8 +1585,8 @@ msgstr "Assegnato a me"
 msgid "assigned to %s"
 msgstr "assegnato a %s"
 
-msgid "Filter by assignment"
-msgstr "Filtra per assegnazione"
+msgid "Assignment"
+msgstr "Incarico"
 
 msgid "Consume product on chore execution"
 msgstr "Consumare il prodotto per l'esecuzione delle faccende domestiche"
@@ -1796,8 +1809,8 @@ msgid "Edit stock entry"
 msgstr "Modifica voce di dispensa"
 
 msgid ""
-"Camera access is on only possible when supported and allowed by your browser"
-" and when grocy is served via a secure (https://) connection"
+"Camera access is only possible when supported and allowed by your browser "
+"and when grocy is served via a secure (https://) connection"
 msgstr ""
 "L'accesso alla videocamera è possibile solo se supportato e consentito dal "
 "browser e quando grocy è connesso tramite una connessione sicura (https://)"
@@ -1835,7 +1848,7 @@ msgstr "Eliminare la chiave API \"%s\"?"
 msgid "Add note"
 msgstr "Aggiungi nota"
 
-msgid "Add note to %s"
+msgid "Add note on %s"
 msgstr "Aggiungi nota a %s"
 
 msgid "per day"
@@ -1853,7 +1866,7 @@ msgstr "Solo oggetti annullati"
 msgid "Add product"
 msgstr "Aggiungi prodotto"
 
-msgid "Add product to %s"
+msgid "Add product on %s"
 msgstr "Aggiungi prodotto a %s"
 
 msgid "Consume all ingredients needed by this weeks recipes or products"
@@ -1926,3 +1939,104 @@ msgstr "Scongelato"
 
 msgid "Frozen"
 msgstr "Congelato"
+
+msgid "Are you sure to delete userentity \"%s\"?"
+msgstr "Sei sicuro di voler eliminare l'entità utente \"%s\"?"
+
+msgid "Shopping list settings"
+msgstr "Impostazioni Lista della Spesa"
+
+msgid "Show a month-view calendar"
+msgstr "Mostra un calendario con vista mensile"
+
+msgid "Don't automatically switch to the compact view on mobile devices"
+msgstr ""
+"Non passare automaticamente alla visualizzazione compatta sui dispositivi "
+"mobili"
+
+msgid "Edit note on %s"
+msgstr "Modifica nota a %s"
+
+msgid "Edit product on %s"
+msgstr "Modifica prodotto a %s"
+
+msgid "Edit recipe on %s"
+msgstr "Modifica ricetta a %s"
+
+msgid "Desired servings"
+msgstr "Porzioni desiderate"
+
+msgid "Base: %s"
+msgstr "Base: %s"
+
+msgid "Recipes settings"
+msgstr "Impostazioni Ricette"
+
+msgid "Recipe card"
+msgstr "Scheda ricetta"
+
+msgid "Group ingredients by their product group"
+msgstr "Raggruppa gli ingredienti per il loro gruppo di prodotti"
+
+msgid "Unknown store"
+msgstr "Negozio sconosciuto"
+
+msgid "Store"
+msgstr "Negozio"
+
+msgid "Transaction successfully undone"
+msgstr "Transazione annullata correttamente"
+
+msgid "Default store"
+msgstr "Negozio predefinito"
+
+msgid "Consume this stock entry"
+msgstr "Consuma questa voce di dispensa"
+
+msgid "Mark this stock entry as open"
+msgstr "Segna questa voce di dispensa come aperta"
+
+msgid "Mark this item as done"
+msgstr "Segna questo elemento come fatto"
+
+msgid "Edit this item"
+msgstr "Modifica questo elemento"
+
+msgid "Delete this item"
+msgstr "Elimina questo elemento"
+
+msgid "Show an icon if the product is already on the shopping list"
+msgstr "Mostra un'icona se il prodotto è già nella lista della spesa"
+
+msgid "Calories"
+msgstr "Calorie"
+
+msgid ""
+"By default the amount to be added to the shopping list is `needed amount - "
+"stock amount - shopping list amount` - when this is enabled, it is only "
+"checked against the stock amount, not against what is already on the "
+"shopping list"
+msgstr ""
+"Per impostazione predefinita, l'importo da aggiungere alla lista della spesa"
+" è “importo necessario - importo della dispensa - importo della lista della "
+"spesa”  - quando questo è abilitato, viene verificato solo rispetto "
+"all'importo della dispensa, non rispetto a ciò che è già nella lista della "
+"spesa"
+
+msgid "means %1$s per %2$s"
+msgstr "si intende %1$s fino a %2$s"
+
+msgid "Create inverse QU conversion"
+msgstr "Crea conversione inversa di Unità di Quantità"
+
+msgid "Create recipe"
+msgstr "Crea una ricetta"
+
+msgid "Save & continue to add ingredients and included recipes"
+msgstr "Salva e continua ad aggiungere ingredienti e ricette incluse"
+
+msgid "Save & continue"
+msgstr "Salva e continua"
+
+msgid "Save & return to recipes"
+msgstr "Salva e torna alle ricette"

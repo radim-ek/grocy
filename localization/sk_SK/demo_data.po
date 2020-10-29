@@ -285,7 +285,7 @@ msgid "The thing which happens daily"
 msgstr "Vec, ktorá sa deje každý deň"
 
 msgid "The thing which happens on Mondays and Wednesdays"
-msgstr "Vec, ktorá sa deje pondelky a stredy"
+msgstr "Vec, ktorá sa deje každý pondelok a stredu"
 
 msgid "Swedish"
 msgstr "Švédčina"
@@ -359,3 +359,23 @@ msgstr "Maďarčina"
 
 msgid "Slovak"
 msgstr "Slovenčina"
+
+msgid "Czech"
+msgstr ""
+
+msgid "Portuguese (Portugal)"
+msgstr ""
+
+# Use a in your country well known supermarket name
+msgid "DemoSupermarket1"
+msgstr ""
+
+# Use a in your country well known supermarket name
+msgid "DemoSupermarket2"
+msgstr ""
+
+msgid "Japanese"
+msgstr ""
+
+msgid "Chinese (Taiwan)"
+msgstr ""

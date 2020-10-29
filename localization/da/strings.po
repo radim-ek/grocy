@@ -1,8 +1,10 @@
+# 
 # Translators:
 # dark159123 <r.j.hansen@protonmail.com>, 2019
 # Bernd Bestel <bernd@berrnd.de>, 2019
 # Troels Siggaard <troels@siggaard.com>, 2019
 # Brian Moos Lindberg <brian@blueeel.dk>, 2019
+# Henrik Bækbo <henrik.baekbo@mail.dk>, 2020
 # 
 msgid ""
 msgstr ""
@@ -10,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-01T17:59:17+00:00\n"
 "PO-Revision-Date: 2019-05-01 17:42+0000\n"
-"Last-Translator: Brian Moos Lindberg <brian@blueeel.dk>, 2019\n"
+"Last-Translator: Henrik Bækbo <henrik.baekbo@mail.dk>, 2020\n"
 "Language-Team: Danish (https://www.transifex.com/grocy/teams/93189/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -85,6 +87,9 @@ msgstr "Batteriregistrering"
 
 msgid "Locations"
 msgstr "Steder"
+
+msgid "Stores"
+msgstr "Forretninger"
 
 msgid "Quantity units"
 msgstr "Mængdeenheder"
@@ -222,6 +227,9 @@ msgstr "Konverteringfaktor ved køb til beholdningstypen"
 msgid "Create location"
 msgstr "Opret placering"
 
+msgid "Create store"
+msgstr ""
+
 msgid "Create quantity unit"
 msgstr "Opret mængdeenhed"
 
@@ -254,6 +262,9 @@ msgstr "Rediger vare"
 
 msgid "Edit location"
 msgstr "Rediger placering"
+
+msgid "Edit store"
+msgstr ""
 
 msgid "Record data"
 msgstr "Optag data"
@@ -330,6 +341,9 @@ msgstr "Er du sikker på du vil slette varen \"%s\"?"
 
 msgid "Are you sure to delete location \"%s\"?"
 msgstr "Er du sikker på du vil slette placeringen \"%s\"?"
+
+msgid "Are you sure to delete store \"%s\"?"
+msgstr ""
 
 msgid "Manage API keys"
 msgstr "Administrer API nøgler"
@@ -457,9 +471,6 @@ msgstr "Opskrifter"
 
 msgid "Edit recipe"
 msgstr "Rediger opskrift"
-
-msgid "New recipe"
-msgstr "Ny opskrift"
 
 msgid "Ingredients list"
 msgstr "Ingrediensliste"
@@ -760,8 +771,8 @@ msgstr "Forbliv logget ind"
 msgid "When not set, you will get logged out at latest after 30 days"
 msgstr "Hvis ikke markeret, vil du blive logget ud senest efter 30 dage"
 
-msgid "Filter by status"
-msgstr "Filtrer efter status"
+msgid "Status"
+msgstr ""
 
 msgid "Below min. stock amount"
 msgstr "Under min. beholdningsantal"
@@ -1102,6 +1113,9 @@ msgstr ""
 msgid "You have to select a location"
 msgstr "Du skal vælge en placering"
 
+msgid "You have to select a store"
+msgstr ""
+
 msgid "List"
 msgstr "Liste"
 
@@ -1135,8 +1149,8 @@ msgstr "Systeminformation"
 msgid "Changelog"
 msgstr "Ændringslog"
 
-msgid "will be multiplied a factor of %1$s to get %2$s"
-msgstr "vil blive ganget med en faktor af %1$s for at få %2$s"
+msgid "will be multiplied by a factor of %1$s to get %2$s"
+msgstr ""
 
 msgid "The given date is earlier than today, are you sure?"
 msgstr "Den angivne dato er før i dag, er du sikker?"
@@ -1326,8 +1340,8 @@ msgstr "Forbrug %1$s af %2$s"
 msgid "Meal plan"
 msgstr "Måltidsplan"
 
-msgid "Add recipe to %s"
-msgstr "Tilføj opskrift til %s"
+msgid "Add recipe on %s"
+msgstr ""
 
 msgid "%s serving"
 msgid_plural "%s servings"
@@ -1549,8 +1563,8 @@ msgstr "Tildelt til mig"
 msgid "assigned to %s"
 msgstr "tildelt til %s"
 
-msgid "Filter by assignment"
-msgstr "Filtrer efter tildeling"
+msgid "Assignment"
+msgstr ""
 
 msgid "Consume product on chore execution"
 msgstr "Forbrug vare ved udførsel af pligt"
@@ -1768,8 +1782,8 @@ msgid "Edit stock entry"
 msgstr "Rediger lagerpostering"
 
 msgid ""
-"Camera access is on only possible when supported and allowed by your browser"
-" and when grocy is served via a secure (https://) connection"
+"Camera access is only possible when supported and allowed by your browser "
+"and when grocy is served via a secure (https://) connection"
 msgstr ""
 
 msgid "Keep screen on"
@@ -1801,7 +1815,7 @@ msgstr ""
 msgid "Add note"
 msgstr ""
 
-msgid "Add note to %s"
+msgid "Add note on %s"
 msgstr ""
 
 msgid "per day"
@@ -1819,7 +1833,7 @@ msgstr ""
 msgid "Add product"
 msgstr ""
 
-msgid "Add product to %s"
+msgid "Add product on %s"
 msgstr ""
 
 msgid "Consume all ingredients needed by this weeks recipes or products"
@@ -1878,4 +1892,98 @@ msgid "Thawed"
 msgstr ""
 
 msgid "Frozen"
+msgstr ""
+
+msgid "Are you sure to delete userentity \"%s\"?"
+msgstr ""
+
+msgid "Shopping list settings"
+msgstr ""
+
+msgid "Show a month-view calendar"
+msgstr ""
+
+msgid "Don't automatically switch to the compact view on mobile devices"
+msgstr ""
+
+msgid "Edit note on %s"
+msgstr ""
+
+msgid "Edit product on %s"
+msgstr ""
+
+msgid "Edit recipe on %s"
+msgstr ""
+
+msgid "Desired servings"
+msgstr ""
+
+msgid "Base: %s"
+msgstr ""
+
+msgid "Recipes settings"
+msgstr ""
+
+msgid "Recipe card"
+msgstr ""
+
+msgid "Group ingredients by their product group"
+msgstr ""
+
+msgid "Unknown store"
+msgstr ""
+
+msgid "Store"
+msgstr ""
+
+msgid "Transaction successfully undone"
+msgstr ""
+
+msgid "Default store"
+msgstr ""
+
+msgid "Consume this stock entry"
+msgstr ""
+
+msgid "Mark this stock entry as open"
+msgstr ""
+
+msgid "Mark this item as done"
+msgstr ""
+
+msgid "Edit this item"
+msgstr ""
+
+msgid "Delete this item"
+msgstr ""
+
+msgid "Show an icon if the product is already on the shopping list"
+msgstr ""
+
+msgid "Calories"
+msgstr ""
+
+msgid ""
+"By default the amount to be added to the shopping list is `needed amount - "
+"stock amount - shopping list amount` - when this is enabled, it is only "
+"checked against the stock amount, not against what is already on the "
+"shopping list"
+msgstr ""
+
+msgid "means %1$s per %2$s"
+msgstr ""
+
+msgid "Create inverse QU conversion"
+msgstr ""
+
+msgid "Create recipe"
+msgstr ""
+
+msgid "Save & continue to add ingredients and included recipes"
+msgstr ""
+
+msgid "Save & continue"
+msgstr ""
+
+msgid "Save & return to recipes"
 msgstr ""

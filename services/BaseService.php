@@ -2,20 +2,63 @@
 
 namespace Grocy\Services;
 
-use \Grocy\Services\DatabaseService;
-use \Grocy\Services\LocalizationService;
-
 class BaseService
 {
-	public function __construct() {
-		$this->DatabaseService = new DatabaseService();
-		$this->Database = $this->DatabaseService->GetDbConnection();
+	private static $instances = [];
 
-		$localizationService = new LocalizationService(GROCY_CULTURE);
-		$this->LocalizationService = $localizationService;
+	public function __construct()
+	{
 	}
 
-	protected $DatabaseService;
-	protected $Database;
-	protected $LocalizationService;
+	public static function getInstance()
+	{
+		$className = get_called_class();
+
+		if (!isset(self::$instances[$className]))
+		{
+			self::$instances[$className] = new $className();
+		}
+
+		return self::$instances[$className];
+	}
+
+	protected function getBatteriesService()
+	{
+		return BatteriesService::getInstance();
+	}
+
+	protected function getChoresService()
+	{
+		return ChoresService::getInstance();
+	}
+
+	protected function getDatabase()
+	{
+		return $this->getDatabaseService()->GetDbConnection();
+	}
+
+	protected function getDatabaseService()
+	{
+		return DatabaseService::getInstance();
+	}
+
+	protected function getLocalizationService()
+	{
+		return LocalizationService::getInstance(GROCY_LOCALE);
+	}
+
+	protected function getStockservice()
+	{
+		return StockService::getInstance();
+	}
+
+	protected function getTasksService()
+	{
+		return TasksService::getInstance();
+	}
+
+	protected function getUsersService()
+	{
+		return UsersService::getInstance();
+	}
 }

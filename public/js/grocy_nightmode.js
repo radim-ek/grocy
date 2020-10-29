@@ -3,11 +3,11 @@
 	var value = $(this).is(":checked");
 	if (value)
 	{
-		$("body").addClass("night-mode");
-
 		// Force disable auto night mode when night mode is enabled
 		$("#auto-night-mode-enabled").prop("checked", false);
 		$("#auto-night-mode-enabled").trigger("change");
+
+		$("body").addClass("night-mode");
 	}
 	else
 	{
@@ -38,7 +38,7 @@ $(document).on("keyup", "#auto-night-mode-time-range-from, #auto-night-mode-time
 {
 	var value = $(this).val();
 	var valueIsValid = moment(value, "HH:mm", true).isValid();
-	
+
 	if (valueIsValid)
 	{
 		$(this).removeClass("bg-danger");
@@ -105,7 +105,7 @@ function CheckNightMode()
 			$("body").removeClass("night-mode");
 			$("#currently-inside-night-mode-range").prop("checked", false);
 			$("#currently-inside-night-mode-range").trigger("change");
-		}		
+		}
 	}
 }
 if (Grocy.UserId !== -1)

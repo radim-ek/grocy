@@ -4,60 +4,24 @@ namespace Grocy\Services;
 
 class UserfieldsService extends BaseService
 {
-	const USERFIELD_TYPE_SINGLE_LINE_TEXT = 'text-single-line';
-	const USERFIELD_TYPE_SINGLE_MULTILINE_TEXT = 'text-multi-line';
-	const USERFIELD_TYPE_INTEGRAL_NUMBER = 'number-integral';
-	const USERFIELD_TYPE_DECIMAL_NUMBER = 'number-decimal';
+	const USERFIELD_TYPE_CHECKBOX = 'checkbox';
 	const USERFIELD_TYPE_DATE = 'date';
 	const USERFIELD_TYPE_DATETIME = 'datetime';
-	const USERFIELD_TYPE_CHECKBOX = 'checkbox';
-	const USERFIELD_TYPE_PRESET_LIST = 'preset-list';
-	const USERFIELD_TYPE_PRESET_CHECKLIST = 'preset-checklist';
+	const USERFIELD_TYPE_DECIMAL_NUMBER = 'number-decimal';
+	const USERFIELD_TYPE_FILE = 'file';
+	const USERFIELD_TYPE_IMAGE = 'image';
+	const USERFIELD_TYPE_INTEGRAL_NUMBER = 'number-integral';
 	const USERFIELD_TYPE_LINK = 'link';
+	const USERFIELD_TYPE_PRESET_CHECKLIST = 'preset-checklist';
+	const USERFIELD_TYPE_PRESET_LIST = 'preset-list';
+	const USERFIELD_TYPE_SINGLE_LINE_TEXT = 'text-single-line';
+	const USERFIELD_TYPE_SINGLE_MULTILINE_TEXT = 'text-multi-line';
 
-	public function __construct()
-	{
-		parent::__construct();
-		$this->OpenApiSpec = json_decode(file_get_contents(__DIR__ . '/../grocy.openapi.json'));
-	}
-
-	protected $OpenApiSpec;
-	
-	public function GetFields($entity)
-	{
-		if (!$this->IsValidEntity($entity))
-		{
-			throw new \Exception('Entity does not exist or is not exposed');
-		}
-
-		return $this->Database->userfields()->where('entity', $entity)->orderBy('name')->fetchAll();
-	}
-
-	public function GetField($fieldId)
-	{
-		return $this->Database->userfields($fieldId);
-	}
+	protected $OpenApiSpec = null;
 
 	public function GetAllFields()
 	{
-		return $this->Database->userfields()->orderBy('name')->fetchAll();
-	}
-
-	public function GetValues($entity, $objectId)
-	{
-		if (!$this->IsValidEntity($entity))
-		{
-			throw new \Exception('Entity does not exist or is not exposed');
-		}
-
-		$userfields = $this->Database->userfield_values_resolved()->where('entity = :1 AND object_id = :2', $entity, $objectId)->orderBy('name')->fetchAll();
-		$userfieldKeyValuePairs = array();
-		foreach ($userfields as $userfield)
-		{
-			$userfieldKeyValuePairs[$userfield->name] = $userfield->value;
-		}
-
-		return $userfieldKeyValuePairs;
+		return $this->getDatabase()->userfields()->orderBy('name')->fetchAll();
 	}
 
 	public function GetAllValues($entity)
@@ -67,7 +31,59 @@ class UserfieldsService extends BaseService
 			throw new \Exception('Entity does not exist or is not exposed');
 		}
 
-		return $this->Database->userfield_values_resolved()->where('entity', $entity)->orderBy('name')->fetchAll();
+		return $this->getDatabase()->userfield_values_resolved()->where('entity', $entity)->orderBy('name')->fetchAll();
+	}
+
+	public function GetEntities()
+	{
+		$exposedDefaultEntities = $this->getOpenApiSpec()->components->internalSchemas->ExposedEntity->enum;
+
+		$userentities = [];
+
+		foreach ($this->getDatabase()->userentities()->orderBy('name') as $userentity)
+		{
+			$userentities[] = 'userentity-' . $userentity->name;
+		}
+
+		return array_merge($exposedDefaultEntities, $userentities);
+	}
+
+	public function GetField($fieldId)
+	{
+		return $this->getDatabase()->userfields($fieldId);
+	}
+
+	public function GetFieldTypes()
+	{
+		return GetClassConstants('\Grocy\Services\UserfieldsService');
+	}
+
+	public function GetFields($entity)
+	{
+		if (!$this->IsValidEntity($entity))
+		{
+			throw new \Exception('Entity does not exist or is not exposed');
+		}
+
+		return $this->getDatabase()->userfields()->where('entity', $entity)->orderBy('name')->fetchAll();
+	}
+
+	public function GetValues($entity, $objectId)
+	{
+		if (!$this->IsValidEntity($entity))
+		{
+			throw new \Exception('Entity does not exist or is not exposed');
+		}
+
+		$userfields = $this->getDatabase()->userfield_values_resolved()->where('entity = :1 AND object_id = :2', $entity, $objectId)->orderBy('name')->fetchAll();
+		$userfieldKeyValuePairs = [];
+
+		foreach ($userfields as $userfield)
+		{
+			$userfieldKeyValuePairs[$userfield->name] = $userfield->value;
+		}
+
+		return $userfieldKeyValuePairs;
 	}
 
 	public function SetValues($entity, $objectId, $userfields)
@@ -79,7 +95,7 @@ class UserfieldsService extends BaseService
 
 		foreach ($userfields as $key => $value)
 		{
-			$fieldRow = $this->Database->userfields()->where('entity = :1 AND name = :2', $entity, $key)->fetch();
+			$fieldRow = $this->getDatabase()->userfields()->where('entity = :1 AND name = :2', $entity, $key)->fetch();
 
 			if ($fieldRow === null)
 			{
@@ -88,41 +104,39 @@ class UserfieldsService extends BaseService
 
 			$fieldId = $fieldRow->id;
 
-			$alreadyExistingEntry = $this->Database->userfield_values()->where('field_id = :1 AND object_id = :2', $fieldId, $objectId)->fetch();
-			if ($alreadyExistingEntry) // Update
-			{
-				$alreadyExistingEntry->update(array(
+			$alreadyExistingEntry = $this->getDatabase()->userfield_values()->where('field_id = :1 AND object_id = :2', $fieldId, $objectId)->fetch();
+
+			if ($alreadyExistingEntry)
+			{ // Update
+				$alreadyExistingEntry->update([
 					'value' => $value
-				));
+				]);
 			}
-			else // Insert
-			{
-				$newRow = $this->Database->userfield_values()->createRow(array(
+			else
+			{ // Insert
+				$newRow = $this->getDatabase()->userfield_values()->createRow([
 					'field_id' => $fieldId,
 					'object_id' => $objectId,
 					'value' => $value
-				));
+				]);
 				$newRow->save();
 			}
 		}
 	}
 
-	public function GetEntities()
+	public function __construct()
 	{
-		$exposedDefaultEntities = $this->OpenApiSpec->components->internalSchemas->ExposedEntity->enum;
-		
-		$userentities = array();
-		foreach ($this->Database->userentities()->orderBy('name') as $userentity)
-		{
-			$userentities[] = 'userentity-' . $userentity->name;
-		}
-
-		return array_merge($exposedDefaultEntities, $userentities);
+		parent::__construct();
 	}
 
-	public function GetFieldTypes()
+	protected function getOpenApispec()
 	{
-		return GetClassConstants('\Grocy\Services\UserfieldsService');
+		if ($this->OpenApiSpec == null)
+		{
+			$this->OpenApiSpec = json_decode(file_get_contents(__DIR__ . '/../grocy.openapi.json'));
+		}
+
+		return $this->OpenApiSpec;
 	}
 
 	private function IsValidEntity($entity)

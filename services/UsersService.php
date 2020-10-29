@@ -6,13 +6,32 @@ class UsersService extends BaseService
 {
 	public function CreateUser(string $username, string $firstName, string $lastName, string $password)
 	{
-		$newUserRow = $this->Database->users()->createRow(array(
+		$newUserRow = $this->getDatabase()->users()->createRow([
 			'username' => $username,
 			'first_name' => $firstName,
 			'last_name' => $lastName,
 			'password' => password_hash($password, PASSWORD_DEFAULT)
-		));
-		$newUserRow->save();
+		]);
+		$newUserRow = $newUserRow->save();
+		$permList = [];
+
+		foreach ($this->getDatabase()->permission_hierarchy()->where('name', GROCY_DEFAULT_PERMISSIONS)->fetchAll() as $perm)
+		{
+			$permList[] = [
+				'user_id' => $newUserRow->id,
+				'permission_id' => $perm->id
+			];
+		}
+
+		$this->getDatabase()->user_permissions()->insert($permList);
+
+		return $newUserRow;
+	}
+
+	public function DeleteUser($userId)
+	{
+		$row = $this->getDatabase()->users($userId);
+		$row->delete();
 	}
 
 	public function EditUser(int $userId, string $username, string $firstName, string $lastName, string $password)
@@ -22,37 +41,19 @@ class UsersService extends BaseService
 			throw new \Exception('User does not exist');
 		}
 
-		$user = $this->Database->users($userId);
-		$user->update(array(
+		$user = $this->getDatabase()->users($userId);
+		$user->update([
 			'username' => $username,
 			'first_name' => $firstName,
 			'last_name' => $lastName,
 			'password' => password_hash($password, PASSWORD_DEFAULT)
-		));
-	}
-
-	public function DeleteUser($userId)
-	{
-		$row = $this->Database->users($userId);
-		$row->delete();
-	}
-
-	public function GetUsersAsDto()
-	{
-		$users = $this->Database->users();
-		$returnUsers = array();
-		foreach ($users as $user)
-		{
-			unset($user->password);
-			$user->display_name = GetUserDisplayName($user);
-			$returnUsers[] = $user;
-		}
-		return $returnUsers;
+		]);
 	}
 
 	public function GetUserSetting($userId, $settingKey)
 	{
-		$settingRow = $this->Database->user_settings()->where('user_id = :1 AND key = :2', $userId, $settingKey)->fetch();
+		$settingRow = $this->getDatabase()->user_settings()->where('user_id = :1 AND key = :2', $userId, $settingKey)->fetch();
+
 		if ($settingRow !== null)
 		{
 			return $settingRow->value;
@@ -65,9 +66,10 @@ class UsersService extends BaseService
 
 	public function GetUserSettings($userId)
 	{
-		$settings = array();
+		$settings = [];
 
-		$settingRows = $this->Database->user_settings()->where('user_id = :1', $userId)->fetchAll();
+		$settingRows = $this->getDatabase()->user_settings()->where('user_id = :1', $userId)->fetchAll();
+
 		foreach ($settingRows as $settingRow)
 		{
 			$settings[$settingRow->key] = $settingRow->value;
@@ -78,30 +80,36 @@ class UsersService extends BaseService
 		return array_merge($GROCY_DEFAULT_USER_SETTINGS, $settings);
 	}
 
+	public function GetUsersAsDto(): \LessQL\Result
+	{
+		return $this->getDatabase()->users_dto();
+	}
+
 	public function SetUserSetting($userId, $settingKey, $settingValue)
 	{
-		$settingRow = $this->Database->user_settings()->where('user_id = :1 AND key = :2', $userId, $settingKey)->fetch();
+		$settingRow = $this->getDatabase()->user_settings()->where('user_id = :1 AND key = :2', $userId, $settingKey)->fetch();
+
 		if ($settingRow !== null)
 		{
-			$settingRow->update(array(
+			$settingRow->update([
 				'value' => $settingValue,
 				'row_updated_timestamp' => date('Y-m-d H:i:s')
-			));
+			]);
 		}
 		else
 		{
-			$settingRow = $this->Database->user_settings()->createRow(array(
+			$settingRow = $this->getDatabase()->user_settings()->createRow([
 				'user_id' => $userId,
 				'key' => $settingKey,
 				'value' => $settingValue
-			));
+			]);
 			$settingRow->save();
 		}
 	}
 
 	private function UserExists($userId)
 	{
-		$userRow = $this->Database->users()->where('id = :1', $userId)->fetch();
+		$userRow = $this->getDatabase()->users()->where('id = :1', $userId)->fetch();
 		return $userRow !== null;
 	}
 }
